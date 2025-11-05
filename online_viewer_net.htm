@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scan 2 Win - Stick2Earn</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .wheel-container {
+            display: none;
+            text-align: center;
+        }
+
+        .wheel-wrapper {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 30px auto;
+        }
+
+        .wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 8px solid #333;
+            position: relative;
+            transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+        }
+
+        .wheel-segment {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            transform-origin: 100% 100%;
+            clip-path: polygon(0 0, 100% 0, 100% 100%);
+        }
+
+        .segment-1 { background: #ff6b6b; transform: rotate(0deg) skewY(-54deg); }
+        .segment-2 { background: #4ecdc4; transform: rotate(36deg) skewY(-54deg); }
+        .segment-3 { background: #ffe66d; transform: rotate(72deg) skewY(-54deg); }
+        .segment-4 { background: #a8e6cf; transform: rotate(108deg) skewY(-54deg); }
+        .segment-5 { background: #ff8b94; transform: rotate(144deg) skewY(-54deg); }
+        .segment-6 { background: #ffd3b6; transform: rotate(180deg) skewY(-54deg); }
+        .segment-7 { background: #dcedc1; transform: rotate(216deg) skewY(-54deg); }
+        .segment-8 { background: #a8d8ea; transform: rotate(252deg) skewY(-54deg); }
+        .segment-9 { background: #ffaaa5; transform: rotate(288deg) skewY(-54deg); }
+        .segment-10 { background: #b4a7d6; transform: rotate(324deg) skewY(-54deg); }
+
+        .wheel-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 50%;
+            border: 4px solid #333;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .wheel-pointer {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-top: 30px solid #ff6b6b;
+            z-index: 11;
+        }
+
+        .spin-btn {
+            padding: 15px 40px;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .spin-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .spin-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .result-container {
+            display: none;
+            text-align: center;
+        }
+
+        .prize-announcement {
+            font-size: 2em;
+            color: #667eea;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+
+        .prize-amount {
+            font-size: 3em;
+            color: #ff6b6b;
+            margin: 20px 0;
+        }
+
+        .redemption-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .redemption-info h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .address {
+            color: #666;
+            line-height: 1.6;
+            font-size: 1.1em;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .wheel-wrapper {
+                width: 250px;
+                height: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Form Section -->
+        <div id="formSection">
+            <h1>🎉 Scan 2 Win 🎉</h1>
+            <p class="subtitle">Enter your information and book a call with us to get up to $50 Tim Hortons gift card!</p>
+            
+            <form id="entryForm">
+                <div class="form-group">
+                    <label for="name">Name *</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone *</label>
+                    <input type="tel" id="phone" name="phone" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="service">Services Interested In *</label>
+                    <select id="service" name="service" required>
+                        <option value="">-- Select a Service --</option>
+                        <option value="pre-approval">Pre Approval</option>
+                        <option value="first-time-buyer">First Time Home Buyer</option>
+                        <option value="renew-mortgage">Renew Your Mortgage</option>
+                        <option value="commercial-mortgage">Commercial Mortgage</option>
+                        <option value="small-business-loan">Small Business Loan</option>
+                        <option value="self-employed-mortgage">Self Employed Mortgage</option>
+                        <option value="other">Other Services</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="submit-btn">Submit & Spin to Win!</button>
+            </form>
+        </div>
+
+        <!-- Wheel Section -->
+        <div id="wheelSection" class="wheel-container">
+            <h2 style="color: #667eea; margin-bottom: 20px;">Spin the Wheel!</h2>
+            <div class="wheel-wrapper">
+                <div class="wheel-pointer"></div>
+                <div class="wheel" id="wheel">
+                    <div class="wheel-segment segment-1"></div>
+                    <div class="wheel-segment segment-2"></div>
+                    <div class="wheel-segment segment-3"></div>
+                    <div class="wheel-segment segment-4"></div>
+                    <div class="wheel-segment segment-5"></div>
+                    <div class="wheel-segment segment-6"></div>
+                    <div class="wheel-segment segment-7"></div>
+                    <div class="wheel-segment segment-8"></div>
+                    <div class="wheel-segment segment-9"></div>
+                    <div class="wheel-segment segment-10"></div>
+                    <div class="wheel-center">SPIN</div>
+                </div>
+            </div>
+            <button class="spin-btn" id="spinBtn">SPIN NOW!</button>
+        </div>
+
+        <!-- Result Section -->
+        <div id="resultSection" class="result-container">
+            <div class="prize-announcement">🎊 Congratulations! 🎊</div>
+            <div class="prize-amount" id="prizeAmount">$25</div>
+            <p style="font-size: 1.2em; color: #666;">Tim Hortons Gift Card</p>
+            
+            <div class="redemption-info">
+                <h3>To Redeem Your Coupon:</h3>
+                <p class="address">
+                    Visit us at:<br>
+                    <strong>#1115 - 99 Wyse Road<br>
+                    Dartmouth, NS B3A 4S5</strong><br><br>
+                    and get a free consultation!
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Wait for DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('entryForm');
+            const formSection = document.getElementById('formSection');
+            const wheelSection = document.getElementById('wheelSection');
+            const resultSection = document.getElementById('resultSection');
+            const spinBtn = document.getElementById('spinBtn');
+            const wheel = document.getElementById('wheel');
+            const prizeAmount = document.getElementById('prizeAmount');
+
+            // Handle form submission
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Get form values
+                const name = document.getElementById('name').value.trim();
+                const phone = document.getElementById('phone').value.trim();
+                const service = document.getElementById('service').value;
+
+                // Validate all fields are filled
+                if (name && phone && service) {
+                    console.log('Form submitted:', { name, phone, service });
+                    
+                    // Hide form, show wheel
+                    formSection.style.display = 'none';
+                    wheelSection.style.display = 'block';
+                } else {
+                    alert('Please fill in all fields');
+                }
+            });
+
+            // Handle wheel spin
+            spinBtn.addEventListener('click', function() {
+                spinBtn.disabled = true;
+                
+                // Determine prize (10% chance for $50, 90% chance for $25)
+                const random = Math.random();
+                const isWinner = random < 0.1; // 10% chance
+                const prize = isWinner ? 50 : 25;
+                
+                console.log('Prize determined:', prize);
+                
+                // Calculate rotation
+                const baseRotation = 1800; // 5 full spins
+                const segmentAngle = 36; // 360/10 segments
+                
+                // Randomize which segment to land on
+                const randomSegment = Math.floor(Math.random() * 10);
+                const finalRotation = baseRotation + (randomSegment * segmentAngle);
+                
+                // Spin the wheel
+                wheel.style.transform = 'rotate(' + finalRotation + 'deg)';
+                
+                // Show result after spin completes
+                setTimeout(function() {
+                    wheelSection.style.display = 'none';
+                    resultSection.style.display = 'block';
+                    prizeAmount.textContent = '$' + prize;
+                    
+                    console.log('Prize won:', prize);
+                }, 4000);
+            });
+        });
+    </script>
+</body>
+</html>
